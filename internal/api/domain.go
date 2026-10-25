@@ -7,11 +7,11 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
-	"github.com/NCUnix/shlink-go/internal/api/types"
 	"github.com/NCUnix/shlink-go/internal/apikey"
 	"github.com/NCUnix/shlink-go/internal/domain"
 	"github.com/NCUnix/shlink-go/internal/problem"
 	"github.com/NCUnix/shlink-go/internal/shorturl"
+	"github.com/NCUnix/shlink-go/internal/types"
 )
 
 type domainRedirects struct {

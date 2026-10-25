@@ -3,8 +3,8 @@ package shorturl
 import (
 	"time"
 
-	"github.com/NCUnix/shlink-go/internal/api/types"
 	"github.com/NCUnix/shlink-go/internal/page"
+	"github.com/NCUnix/shlink-go/internal/types"
 )
 
 type VisitsSummary struct {

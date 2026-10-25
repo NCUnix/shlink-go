@@ -11,11 +11,11 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/uptrace/bun"
 
-	"github.com/NCUnix/shlink-go/internal/api/types"
 	"github.com/NCUnix/shlink-go/internal/apikey"
 	"github.com/NCUnix/shlink-go/internal/clock"
 	"github.com/NCUnix/shlink-go/internal/config"
 	"github.com/NCUnix/shlink-go/internal/domain"
+	"github.com/NCUnix/shlink-go/internal/types"
 )
 
 type Service struct {
