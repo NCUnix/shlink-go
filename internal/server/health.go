@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/NCUnix/shlink-go/internal/api"
 )
 
 type healthLinks struct {
@@ -32,7 +34,7 @@ func (a *App) health(c *gin.Context) {
 	c.Header("Content-Type", "application/health+json")
 	c.JSON(status, healthResponse{
 		Status:  state,
-		Version: "5.1.7",
+		Version: api.ShlinkVersion,
 		Links: healthLinks{
 			About:   "https://shlink.io",
 			Project: "https://github.com/shlinkio/shlink",

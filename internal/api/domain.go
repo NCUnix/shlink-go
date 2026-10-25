@@ -7,11 +7,11 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
-	"github.com/NCUnix/shlink-go/internal/api/types"
 	"github.com/NCUnix/shlink-go/internal/apikey"
 	"github.com/NCUnix/shlink-go/internal/domain"
 	"github.com/NCUnix/shlink-go/internal/problem"
 	"github.com/NCUnix/shlink-go/internal/shorturl"
+	"github.com/NCUnix/shlink-go/internal/types"
 )
 
 type domainRedirects struct {
@@ -63,7 +63,7 @@ func RegisterDomains(api huma.API, repo *domain.Repository) {
 		}
 		domains, err := repo.ListVisible(ctx, principal.Scope)
 		if err != nil {
-			return nil, problem.New(http.StatusInternalServerError, "https://shlink.io/api/error/internal", "Internal error", "An unexpected error occurred.")
+			return nil, internalProblem(ctx, err)
 		}
 		out := &listDomainsOutput{}
 		out.Body.Domains.Data = make([]domainInfo, 0, len(domains))
@@ -115,7 +115,7 @@ func RegisterDomains(api huma.API, repo *domain.Repository) {
 			InvalidShortURLRedirectSet: body.InvalidShortURLRedirect.Set,
 		})
 		if err != nil {
-			return nil, problem.New(http.StatusInternalServerError, "https://shlink.io/api/error/internal", "Internal error", "An unexpected error occurred.")
+			return nil, internalProblem(ctx, err)
 		}
 		return &domainRedirectsOutput{Body: redirectsDTO(*updated)}, nil
 	})

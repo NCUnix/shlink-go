@@ -6,8 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ShlinkVersion is the upstream Shlink API version this server emulates. The web
+// client reads it to decide which features to show, so it is the contract
+// version, not the version of this Go binary.
+const ShlinkVersion = "5.1.7"
+
 func NewHuma(engine *gin.Engine) huma.API {
-	cfg := huma.DefaultConfig("Shlink Go API", "5.1.7")
+	cfg := huma.DefaultConfig("Shlink Go API", ShlinkVersion)
 	cfg.OpenAPIPath = ""
 	cfg.DocsPath = ""
 	cfg.SchemasPath = ""
