@@ -20,20 +20,6 @@ type Scope struct {
 	DenyOrphan     bool
 }
 
-func (s Scope) ShortURLConditions(alias string) ([]string, []any) {
-	where := make([]string, 0, 2)
-	args := make([]any, 0, 2)
-	if s.AuthorAPIKeyID != nil {
-		where = append(where, alias+".author_api_key_id = ?")
-		args = append(args, *s.AuthorAPIKeyID)
-	}
-	if s.DomainID != nil {
-		where = append(where, alias+".domain_id = ?")
-		args = append(args, *s.DomainID)
-	}
-	return where, args
-}
-
 func (s Scope) HasShortURLRestrictions() bool {
 	return s.AuthorAPIKeyID != nil || s.DomainID != nil
 }

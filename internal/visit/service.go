@@ -187,7 +187,7 @@ func (s *Service) DeleteOrphanVisits(ctx context.Context, scope apikey.Scope) (i
 	}
 	where := []string{"v.orphan_type IS NOT NULL"}
 	args := make([]any, 0, 1)
-	conditions, conditionArgs := orphanScopeConditions(scope, "v")
+	conditions, conditionArgs := scope.OrphanConditions("v")
 	where = append(where, conditions...)
 	args = append(args, conditionArgs...)
 	result, err := s.db.NewRaw(
@@ -197,19 +197,6 @@ func (s *Service) DeleteOrphanVisits(ctx context.Context, scope apikey.Scope) (i
 		return 0, err
 	}
 	return result.RowsAffected()
-}
-
-// orphanScopeConditions restricts orphan visits to the domains owned by a
-// restricted API key. Orphan visits are not linked to any short URL, so keys
-// scoped to authored short URLs have no access to them at all.
-func orphanScopeConditions(scope apikey.Scope, alias string) ([]string, []any) {
-	if scope.DomainID != nil {
-		return []string{alias + ".domain_id = ?"}, []any{*scope.DomainID}
-	}
-	if scope.AuthorAPIKeyID != nil {
-		return []string{"FALSE"}, nil
-	}
-	return nil, nil
 }
 
 type filter struct {
@@ -291,7 +278,7 @@ func (s *Service) where(scope apikey.Scope, params ListParams, f filter) ([]stri
 	args := make([]any, 0, 8)
 	if f.orphan {
 		where = append(where, "v.orphan_type IS NOT NULL")
-		conditions, conditionArgs := orphanScopeConditions(scope, "v")
+		conditions, conditionArgs := scope.OrphanConditions("v")
 		where = append(where, conditions...)
 		args = append(args, conditionArgs...)
 	} else {
@@ -354,7 +341,7 @@ func (s *Service) summary(ctx context.Context, scope apikey.Scope, orphan bool) 
 	args := make([]any, 0, 2)
 	if orphan {
 		where = append(where, "v.orphan_type IS NOT NULL")
-		conditions, conditionArgs := orphanScopeConditions(scope, "v")
+		conditions, conditionArgs := scope.OrphanConditions("v")
 		where = append(where, conditions...)
 		args = append(args, conditionArgs...)
 	} else {
