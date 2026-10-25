@@ -23,7 +23,14 @@ func NewApp(t *testing.T, db *store.DB) *application.App {
 
 func NewAppWithConfig(t *testing.T, db *store.DB, cfg config.Config, clk clock.Clock) *application.App {
 	t.Helper()
-	result, err := application.NewWithClock(cfg, db, slog.New(slog.NewTextHandler(io.Discard, nil)), clk)
+	return NewAppWithLogger(t, db, cfg, clk, slog.New(slog.NewTextHandler(io.Discard, nil)))
+}
+
+// NewAppWithLogger builds the application with a caller-supplied logger, so a
+// test can assert on what the server actually emits.
+func NewAppWithLogger(t *testing.T, db *store.DB, cfg config.Config, clk clock.Clock, logger *slog.Logger) *application.App {
+	t.Helper()
+	result, err := application.NewWithClock(cfg, db, logger, clk)
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = result.Close() })
 	return result

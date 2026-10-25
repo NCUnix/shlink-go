@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
@@ -11,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"github.com/NCUnix/shlink-go/internal/logctx"
 	"github.com/NCUnix/shlink-go/internal/problem"
 )
 
@@ -24,7 +24,16 @@ func requestIDMiddleware() gin.HandlerFunc {
 		}
 		c.Set(requestIDKey, id)
 		c.Header("X-Request-Id", id)
-		c.Request = c.Request.WithContext(withRequestID(c.Request.Context(), id))
+		c.Next()
+	}
+}
+
+// loggerMiddleware exposes the application logger to handlers through the
+// request context, so code that only receives a context still logs with the
+// configured handler instead of slog.Default.
+func loggerMiddleware(logger *slog.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Request = c.Request.WithContext(logctx.With(c.Request.Context(), logger))
 		c.Next()
 	}
 }
@@ -90,17 +99,6 @@ func implicitOptionsMiddleware() gin.HandlerFunc {
 		c.Status(http.StatusNoContent)
 		c.Abort()
 	}
-}
-
-type requestIDContextKey struct{}
-
-func withRequestID(ctx context.Context, id string) context.Context {
-	return context.WithValue(ctx, requestIDContextKey{}, id)
-}
-
-func RequestIDFromContext(ctx context.Context) string {
-	id, _ := ctx.Value(requestIDContextKey{}).(string)
-	return id
 }
 
 func isRESTPath(path string) bool {

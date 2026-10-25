@@ -2,14 +2,14 @@ package api
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 
+	"github.com/NCUnix/shlink-go/internal/logctx"
 	"github.com/NCUnix/shlink-go/internal/problem"
 )
 
 func internalProblem(ctx context.Context, err error) *problem.Problem {
-	slog.ErrorContext(ctx, "request_failed", "error", err)
+	logctx.From(ctx).ErrorContext(ctx, "request_failed", "error", err)
 	return problem.New(
 		http.StatusInternalServerError,
 		"https://shlink.io/api/error/internal",

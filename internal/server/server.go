@@ -32,6 +32,7 @@ func New(cfg config.Config, db *store.DB, logger *slog.Logger, auth gin.HandlerF
 	}
 
 	engine.Use(requestIDMiddleware())
+	engine.Use(loggerMiddleware(logger))
 	engine.Use(accessLogMiddleware(logger))
 	engine.Use(recoveryMiddleware(logger))
 	engine.Use(corsMiddleware(cfg))
