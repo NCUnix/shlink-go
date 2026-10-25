@@ -20,10 +20,6 @@ type Scope struct {
 	DenyOrphan     bool
 }
 
-func (s Scope) HasShortURLRestrictions() bool {
-	return s.AuthorAPIKeyID != nil || s.DomainID != nil
-}
-
 type Principal struct {
 	APIKeyID int64
 	Name     string
