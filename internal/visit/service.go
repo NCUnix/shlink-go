@@ -400,7 +400,7 @@ func (r visitRow) visit() Visit {
 		VisitedURL:   r.VisitedURL,
 		RedirectURL:  r.RedirectURL,
 	}
-	if r.CountryCode != nil || r.CountryName != nil || r.CityName != nil {
+	if r.hasLocation() {
 		location := &geoip.Location{}
 		if r.CountryCode != nil {
 			location.CountryCode = *r.CountryCode
@@ -426,6 +426,13 @@ func (r visitRow) visit() Visit {
 		v.VisitLocation = location
 	}
 	return v
+}
+
+// hasLocation reports whether the row carries any geo column. Track writes all
+// of them together, but a partial row must still surface the fields it has.
+func (r visitRow) hasLocation() bool {
+	return r.CountryCode != nil || r.CountryName != nil || r.RegionName != nil ||
+		r.CityName != nil || r.Latitude != nil || r.Longitude != nil || r.Timezone != nil
 }
 
 func validOrphanType(value string) bool {
