@@ -121,3 +121,11 @@ type storedShortURL struct {
 	Authority        string     `bun:"authority"`
 	IsDefault        bool       `bun:"is_default"`
 }
+
+// shortURLSelect is the column list every storedShortURL scan relies on; keep it
+// in one place so a new column cannot be added to some queries and missed by others.
+const shortURLSelect = `SELECT s.id, s.domain_id, s.short_code, s.long_url, s.title, s.date_created,
+		s.valid_since, s.valid_until, s.max_visits, s.crawlable, s.forward_query,
+		s.author_api_key_id, s.has_redirect_rules, s.visits_total, s.visits_non_bots,
+		s.visits_bots, d.authority, d.is_default
+		FROM short_urls s JOIN domains d ON d.id = s.domain_id`
