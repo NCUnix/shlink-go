@@ -63,7 +63,7 @@ func RegisterDomains(api huma.API, repo *domain.Repository) {
 		}
 		domains, err := repo.ListVisible(ctx, principal.Scope)
 		if err != nil {
-			return nil, problem.New(http.StatusInternalServerError, "https://shlink.io/api/error/internal", "Internal error", "An unexpected error occurred.")
+			return nil, internalProblem(ctx, err)
 		}
 		out := &listDomainsOutput{}
 		out.Body.Domains.Data = make([]domainInfo, 0, len(domains))
@@ -115,7 +115,7 @@ func RegisterDomains(api huma.API, repo *domain.Repository) {
 			InvalidShortURLRedirectSet: body.InvalidShortURLRedirect.Set,
 		})
 		if err != nil {
-			return nil, problem.New(http.StatusInternalServerError, "https://shlink.io/api/error/internal", "Internal error", "An unexpected error occurred.")
+			return nil, internalProblem(ctx, err)
 		}
 		return &domainRedirectsOutput{Body: redirectsDTO(*updated)}, nil
 	})

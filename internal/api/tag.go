@@ -61,7 +61,7 @@ func RegisterTags(api huma.API, svc *tag.Service) {
 		}
 		result, err := svc.List(ctx, principal.Scope, *params)
 		if err != nil {
-			return nil, mapTagError(err)
+			return nil, mapTagError(ctx, err)
 		}
 		out := &listTagsOutput{}
 		out.Body.Tags = *result
@@ -84,7 +84,7 @@ func RegisterTags(api huma.API, svc *tag.Service) {
 		}
 		result, err := svc.Stats(ctx, principal.Scope, *params)
 		if err != nil {
-			return nil, mapTagError(err)
+			return nil, mapTagError(ctx, err)
 		}
 		out := &tagStatsOutput{}
 		out.Body.Tags = *result
@@ -110,7 +110,7 @@ func RegisterTags(api huma.API, svc *tag.Service) {
 			return nil, problem.InvalidData("oldName", "newName")
 		}
 		if err := svc.Rename(ctx, principal.Scope, body.OldName, body.NewName); err != nil {
-			return nil, mapTagError(err)
+			return nil, mapTagError(ctx, err)
 		}
 		return &struct{}{}, nil
 	})
@@ -127,7 +127,7 @@ func RegisterTags(api huma.API, svc *tag.Service) {
 			return nil, problem.MissingAuthentication()
 		}
 		if err := svc.Delete(ctx, principal.Scope, query.FromContext(ctx, "tags")); err != nil {
-			return nil, mapTagError(err)
+			return nil, mapTagError(ctx, err)
 		}
 		return &struct{}{}, nil
 	})
@@ -158,7 +158,7 @@ func parseTagListParams(input *listTagsInput) (*tag.ListParams, *problem.Problem
 	return params, nil
 }
 
-func mapTagError(err error) *problem.Problem {
+func mapTagError(ctx context.Context, err error) *problem.Problem {
 	var validation *tag.ValidationError
 	if errors.As(err, &validation) {
 		return problem.InvalidData(validation.Elements...)
@@ -175,5 +175,5 @@ func mapTagError(err error) *problem.Problem {
 	if errors.As(err, &conflict) {
 		return problem.TagConflict(conflict.OldName, conflict.NewName)
 	}
-	return problem.New(http.StatusInternalServerError, "https://shlink.io/api/error/internal", "Internal error", "An unexpected error occurred.")
+	return internalProblem(ctx, err)
 }
